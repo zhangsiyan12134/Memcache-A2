@@ -1,7 +1,7 @@
 import random
 from sys import getsizeof
-from app import backendapp, memcache, memcache_stat, memcache_config
-from app.db_access import update_db_key_list, get_db_filename, get_db, get_db_filesize, connect_to_database
+from app import instance_id, memcache, memcache_stat, memcache_config, client
+from app.db_access import connect_to_database
 from datetime import datetime
 
 
@@ -169,6 +169,26 @@ def del_memcache(key):
         print('Error in del_memcache, Key not found in memcache.')
         return False
 
+def send_cloudwatch_response(inst_id, metric_name, metric_value, timestamp):
+    response = client.put_metric_data(
+            Namespace='MemCache',
+            MetricData=[
+                {
+                    'MetricName': metric_name,
+                    'Dimensions': [
+                        {
+                            'Name': 'Instance',
+                            'Value': inst_id
+                        }
+                    ],
+                    'Timestamp': timestamp,
+                    'Value': metric_value,
+                    'Unit': 'Count',
+                    'StorageResolution': 1  # set to hi-res metric
+                },
+            ]
+        )
+    return response
 
 # Called by run.py threading directly
 def store_stats():
@@ -180,24 +200,13 @@ def store_stats():
     :return: None
     """
     print('Start update memcache status!')
+
     current_time = datetime.now()
-    # Get the number of items in cache
-    num_items = memcache_stat['num']
 
-    # Get the total size of images in cache
-    total_size = memcache_stat['size']
-    # Get the number of requests served
-    num_reqs = memcache_stat['total']
+    send_cloudwatch_response(instance_id, 'ItemCount', memcache_stat['num'], current_time)
+    send_cloudwatch_response(instance_id, 'TotalContentSize', memcache_stat['size'], current_time)
+    send_cloudwatch_response(instance_id, 'TotalRequestCount', memcache_stat['total'], current_time)
+    send_cloudwatch_response(instance_id, 'HitRate', memcache_stat['hit_rate'], current_time)
+    send_cloudwatch_response(instance_id, 'MissRate', memcache_stat['mis_rate'], current_time)
 
-    # Get the miss/hit rate
-    mis_rate = memcache_stat['mis_rate']
-    hit_rate = memcache_stat['hit_rate']
-
-    # Store stats into the database by appending row
-    cnx = connect_to_database()
-    cursor = cnx.cursor()
-    query = "INSERT INTO Assignment_1.cache_stats (num_items, total_size, num_reqs, mis_rate, hit_rate, time_stamp)" \
-            "VALUES (%s, %s, %s, %s, %s, %s);"
-    cursor.execute(query, (num_items, total_size, num_reqs, mis_rate, hit_rate, current_time))
-    cnx.commit()
     print('Status Saved! Timestamp is: ', current_time)

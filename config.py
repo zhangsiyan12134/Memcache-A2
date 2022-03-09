@@ -2,6 +2,7 @@ import os
 
 
 class Config(object):
+    INSTANCE_ID = 1  # the ID of backend app(1-8)
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
     IMAGE_PATH = '/home/siyan/Documents/ECE1779/Assignment_1/Assignments_Git/BackendApp/Lab1/image_library'
     ALLOWED_FORMAT = {'jpg', 'jpeg', 'png', 'gif', 'tiff'}
