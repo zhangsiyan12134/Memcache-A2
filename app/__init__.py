@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_apscheduler import APScheduler
 from config import Config
+import boto3
 from datetime import datetime
 
 global memcache  # memcache
@@ -21,6 +22,11 @@ memcache_stat['hit'] = 0        # Total hit count
 memcache_stat['mis'] = 0        # Total missed count
 memcache_stat['hit_rate'] = 0   # Overall hit rate
 memcache_stat['mis_rate'] = 0   # Overall miss rate
+
+client = boto3.client(
+        'cloudwatch',
+        Config.AWS_REGION
+    )
 
 scheduler = APScheduler()
 scheduler.init_app(backendapp)

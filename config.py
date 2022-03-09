@@ -14,11 +14,7 @@ class Config(object):
         'host': 'localhost',
         'database': 'Assignment_1'
     }
-    ASW_CREDENTIAL = {
-        'AWS_REGION': 'us-east-1',
-        'AWS_ACCESS_KEY_ID': 'AKIA2NPVZMNR5BHCTGFV',
-        'AWS_SECRET_ACCESS_KEY': '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'
-    }
+    AWS_REGION = 'us-east-1'
 
 
 
