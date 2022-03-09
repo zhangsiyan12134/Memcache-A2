@@ -202,12 +202,15 @@ def image_upload():
             file.save(file_path)  # write to local file system
             with open(file_path, "rb") as image_file:
                 encoded_image = b64encode(image_file.read()).decode('utf-8')
-            if(add_memcache(key, encoded_image) is True):  # add the key and file name to cache as well as database
+            if add_memcache(key, encoded_image) is True:  # add the key and file name to cache as well as database
                 return render_template("image_viewer.html", img_data=memcache[key]['file'])
             else:
                 print('Failed to add to Memcache')
+                return render_template("upload.html")
+            os.remove(file_path)  # remove the local image, no use to the backend
     else:
         print("Method error in image_upload, wth are you doing??")
+        return render_template("upload.html")
 
 
 @backendapp.route('/image/<key>', methods=['GET', 'POST'])
