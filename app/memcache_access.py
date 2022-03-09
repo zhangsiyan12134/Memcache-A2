@@ -169,7 +169,8 @@ def del_memcache(key):
         print('Error in del_memcache, Key not found in memcache.')
         return False
 
-def send_cloudwatch_response(inst_id, metric_name, metric_value, timestamp):
+
+def send_cloudwatch_response(inst_id, metric_name, metric_value):
     response = client.put_metric_data(
             Namespace='MemCache',
             MetricData=[
@@ -178,10 +179,9 @@ def send_cloudwatch_response(inst_id, metric_name, metric_value, timestamp):
                     'Dimensions': [
                         {
                             'Name': 'Instance',
-                            'Value': inst_id
+                            'Value': 'Instance_' + str(inst_id)
                         }
                     ],
-                    'Timestamp': timestamp,
                     'Value': metric_value,
                     'Unit': 'Count',
                     'StorageResolution': 1  # set to hi-res metric
@@ -203,10 +203,10 @@ def store_stats():
 
     current_time = datetime.now()
 
-    send_cloudwatch_response(instance_id, 'ItemCount', memcache_stat['num'], current_time)
-    send_cloudwatch_response(instance_id, 'TotalContentSize', memcache_stat['size'], current_time)
-    send_cloudwatch_response(instance_id, 'TotalRequestCount', memcache_stat['total'], current_time)
-    send_cloudwatch_response(instance_id, 'HitRate', memcache_stat['hit_rate'], current_time)
-    send_cloudwatch_response(instance_id, 'MissRate', memcache_stat['mis_rate'], current_time)
+    send_cloudwatch_response(instance_id, 'ItemCount', memcache_stat['num'])
+    send_cloudwatch_response(instance_id, 'TotalContentSize', memcache_stat['size'])
+    send_cloudwatch_response(instance_id, 'TotalRequestCount', memcache_stat['total'])
+    send_cloudwatch_response(instance_id, 'HitRate', memcache_stat['hit_rate'])
+    send_cloudwatch_response(instance_id, 'MissRate', memcache_stat['mis_rate'])
 
     print('Status Saved! Timestamp is: ', current_time)

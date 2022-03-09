@@ -1,12 +1,11 @@
-import os, io
+import os
 from base64 import b64encode, b64decode
-from sys import getsizeof
 from app import backendapp, memcache, memcache_stat, memcache_config, scheduler
 from flask import render_template, url_for, request, flash, redirect, send_from_directory, json, jsonify
 from app.db_access import update_db_key_list, get_db, get_db_memcache_config
 from app.memcache_access import get_memcache, add_memcache, clr_memcache, del_memcache, store_stats
 from werkzeug.utils import secure_filename
-from config import Config
+
 
 
 def allowed_file(filename):
@@ -203,8 +202,10 @@ def image_upload():
             file.save(file_path)  # write to local file system
             with open(file_path, "rb") as image_file:
                 encoded_image = b64encode(image_file.read()).decode('utf-8')
-            add_memcache(key, encoded_image)  # add the key and file name to cache as well as database
-            return render_template("image_viewer.html", img_data=memcache[key]['file'])
+            if(add_memcache(key, encoded_image) is True):  # add the key and file name to cache as well as database
+                return render_template("image_viewer.html", img_data=memcache[key]['file'])
+            else:
+                print('Failed to add to Memcache')
     else:
         print("Method error in image_upload, wth are you doing??")
 
