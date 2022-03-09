@@ -17,8 +17,8 @@ class Config(object):
     }
     ASW_CONFIG = {
         'REGION': 'us-east-1',
-        'AWS_ACCESS_KEY_ID': 'AKIA2NPVZMNR5BHCTGFV',
-        'SECRET_ACCESS_KEY': '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'
+        'AWS_ACCESS_KEY_ID': '',
+        'SECRET_ACCESS_KEY': ''
     }
 
 
