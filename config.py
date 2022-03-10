@@ -15,7 +15,7 @@ class Config(object):
         'host': 'localhost',
         'database': 'Assignment_1'
     }
-    ASW_CONFIG = {
+    AWS_CONFIG = {
         'REGION': 'us-east-1',
         'AWS_ACCESS_KEY_ID': '',
         'SECRET_ACCESS_KEY': ''
