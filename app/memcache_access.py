@@ -171,6 +171,7 @@ def del_memcache(key):
 
 
 def send_cloudwatch_response(inst_id, metric_name, metric_value):
+    ts = datetime.utcnow()
     response = client.put_metric_data(
             Namespace='MemCache',
             MetricData=[
@@ -178,17 +179,19 @@ def send_cloudwatch_response(inst_id, metric_name, metric_value):
                     'MetricName': metric_name,
                     'Dimensions': [
                         {
-                            'Name': 'Instance',
-                            'Value': 'Instance_' + str(inst_id)
+                            'Name': 'InstanceId',
+                            'Value': str(inst_id)
                         }
                     ],
                     'Value': metric_value,
+                    'Timestamp': ts,
                     'Unit': 'Count',
                     'StorageResolution': 1  # set to hi-res metric
                 },
             ]
         )
     return response
+
 
 # Called by run.py threading directly
 def store_stats():
@@ -203,9 +206,9 @@ def store_stats():
 
     current_time = datetime.now()
 
-    send_cloudwatch_response(instance_id, 'ItemCount', memcache_stat['num'])
-    send_cloudwatch_response(instance_id, 'TotalContentSize', memcache_stat['size'])
-    send_cloudwatch_response(instance_id, 'TotalRequestCount', memcache_stat['total'])
+    send_cloudwatch_response(instance_id, 'Items', memcache_stat['num'])
+    send_cloudwatch_response(instance_id, 'Size', memcache_stat['size'])
+    send_cloudwatch_response(instance_id, 'Reqs', memcache_stat['total'])
     send_cloudwatch_response(instance_id, 'HitRate', memcache_stat['hit_rate'])
     send_cloudwatch_response(instance_id, 'MissRate', memcache_stat['mis_rate'])
 
