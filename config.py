@@ -9,11 +9,12 @@ class Config(object):
     SCHEDULER_API_ENABLED = True
     SCHEDULER_TIMEZONE = "America/Toronto"
     JOB_INTERVAL = 5  # interval for memcache statistic data updates(in seconds)
-    DB_CONFIG = {
-        'user': 'siyan',
-        'password': 'zhangsiyan123456',
-        'host': 'localhost',
-        'database': 'Assignment_1'
+    RDS_CONFIG = {
+        'host': 'ece1779.cxbccost2b0y.us-east-1.rds.amazonaws.com',
+        'port': 3306,
+        'user': '',
+        'password': '',
+        'database': 'ECE1779'
     }
     AWS_CONFIG = {
         'REGION': 'us-east-1',

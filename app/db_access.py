@@ -7,10 +7,13 @@ from app import backendapp, memcache_config
 # initiate connection to database
 def connect_to_database():
     try:
-        return mysql.connector.connect(user=backendapp.config['DB_CONFIG']['user'],
-                                       password=backendapp.config['DB_CONFIG']['password'],
-                                       host=backendapp.config['DB_CONFIG']['host'],
-                                       database=backendapp.config['DB_CONFIG']['database'])
+        return mysql.connector.connect(
+            host=backendapp.config['RDS_CONFIG']['host'],
+            port=backendapp.config['RDS_CONFIG']['port'],
+            user=backendapp.config['RDS_CONFIG']['user'],
+            password=backendapp.config['RDS_CONFIG']['password'],
+            database=backendapp.config['RDS_CONFIG']['database']
+        )
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your user name or password")
@@ -43,17 +46,17 @@ def update_db_key_list(key, filename, image_size):
     """
     cnx = get_db()  # Create connection to db
     cursor = cnx.cursor()
-    query = "SELECT uniquekey FROM Assignment_1.keylist WHERE uniquekey = %s;"
+    query = "SELECT file_key FROM ECE1779.file_names WHERE file_key = %s;"
     cursor.execute(query, (key,))
     row = cursor.fetchone()  # Retrieve the first row that contains the key
     # Check if database has the key
     if row is None:  # Key is not in database, add new entry
-        query = "INSERT INTO Assignment_1.keylist (uniquekey, filename, image_size) VALUE ( %s, %s, %s);"
+        query = "INSERT INTO ECE1779.file_names (file_key, file_name, file_size) VALUE ( %s, %s, %s);"
         cursor.execute(query, (key, filename, image_size))
         cnx.commit()
         print('Fresh key found! Adding new file ', filename, 'to DB')
     else:  # The given key is in database, update existing item
-        query = "UPDATE Assignment_1.keylist SET filename = %s, image_size = %s WHERE uniquekey = %s;"
+        query = "UPDATE ECE1779.file_names SET file_name = %s, file_size = %s WHERE file_key = %s;"
         cursor.execute(query, (filename, image_size, key))
         cnx.commit()
         print('Key found in DB! Updating new file name ', filename)
@@ -69,7 +72,7 @@ def get_db_filename(key):
     """
     cnx = get_db()  # Create connection to db
     cursor = cnx.cursor()
-    query = "SELECT filename FROM Assignment_1.keylist WHERE uniquekey = %s;"
+    query = "SELECT file_name FROM ECE1779.file_names WHERE file_key = %s;"
     cursor.execute(query, (key,))
     row = cursor.fetchone()  # Retrieve the first row that contains the key
     # Check if database has the key
@@ -87,7 +90,7 @@ def get_db_filesize(key):
     :return: image file size: float
     """
     cursor = get_db().cursor()
-    query = "SELECT image_size FROM Assignment_1.keylist WHERE uniquekey = %s;"
+    query = "SELECT file_size FROM ECE1779.file_names WHERE file_key = %s;"
     cursor.execute(query, (key,))
     row = cursor.fetchone()
     if row is None:
@@ -105,7 +108,7 @@ def get_db_memcache_config():
     """
     cnx = get_db()  # Create connection to db
     cursor = cnx.cursor()
-    query = "SELECT * FROM Assignment_1.memcache_config"
+    query = "SELECT * FROM ECE1779.cache_config"
     cursor.execute(query)
     row = cursor.fetchone()  # Retrieve the first row that contains the configuration
     if row is not None:
