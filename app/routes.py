@@ -51,7 +51,7 @@ def list_keys():
     """
     cnx = get_db()  # Create connection to db
     cursor = cnx.cursor()
-    query = "SELECT * FROM Assignment_1.keylist"
+    query = "SELECT * FROM ECE1779.file_names"
     cursor.execute(query)
     rows = cursor.fetchall()  # Retrieve the first row that contains the key
     return render_template("list_keys.html", rows=rows)

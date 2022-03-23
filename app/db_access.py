@@ -51,7 +51,7 @@ def update_db_key_list(key, filename, image_size):
     row = cursor.fetchone()  # Retrieve the first row that contains the key
     # Check if database has the key
     if row is None:  # Key is not in database, add new entry
-        query = "INSERT INTO ECE1779.file_names (file_key, file_name, file_size) VALUE ( %s, %s, %s);"
+        query = "INSERT INTO ECE1779.file_names (file_key, file_name, file_size) VALUE (%s, %s, %s);"
         cursor.execute(query, (key, filename, image_size))
         cnx.commit()
         print('Fresh key found! Adding new file ', filename, 'to DB')

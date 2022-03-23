@@ -156,6 +156,7 @@ def update_memcache(key, filename):
 def clr_memcache():
     memcache.clear()
     memcache_stat['size'] = 0
+    memcache_stat['num'] = 0
     print('memcache is cleared!')
 
 
